@@ -1,4 +1,6 @@
 ﻿using BookStoreNotCore.BookOperations.CreateBook;
+using BookStoreNotCore.BookOperations.DeleteBook;
+using BookStoreNotCore.BookOperations.GetBookDetail;
 using BookStoreNotCore.BookOperations.GetBooks;
 using BookStoreNotCore.BookOperations.UpdateBook;
 using BookStoreNotCore.DBOperations;
@@ -36,7 +38,7 @@ namespace BookStoreNotCore.Controllers
             //return _context.Books.SingleOrDefault(x => x.Id == Convert.ToInt32(id));
             try
             {
-                GetBookByIdQuery getBook = new GetBookByIdQuery(_context);
+                GetBookDetailQuery getBook = new GetBookDetailQuery(_context);
                 getBook.Id = id;
                 var result = getBook.Handle();
                 return Ok(result);
@@ -72,7 +74,7 @@ namespace BookStoreNotCore.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateBook(int id, [FromBody] UpdateBookModel upToDateBook)
+        public IActionResult UpdateBook(int id, [FromBody] UpdateBookViewModel upToDateBook)
         {
             //Book book = _context.Books.SingleOrDefault(x => x.Id == id);
             //if (book == null)
@@ -101,12 +103,24 @@ namespace BookStoreNotCore.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteBook(int id)
         {
-            Book book = _context.Books.SingleOrDefault(x => x.Id == id);
-            if (book == null)
-                return BadRequest();
-            _context.Books.Remove(book);
-            _context.SaveChanges();
-            return Ok();
+            //Book book = _context.Books.SingleOrDefault(x => x.Id == id);
+            //if (book == null)
+            //    return BadRequest();
+            //_context.Books.Remove(book);
+            //_context.SaveChanges();
+            //return Ok();
+
+            try
+            {
+                DeleteBookCommand deleteBookCommand = new DeleteBookCommand(_context);
+                deleteBookCommand.Id = id;
+                deleteBookCommand.Handle();
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
         }
     }
 }
